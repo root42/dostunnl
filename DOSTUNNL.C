@@ -33,29 +33,29 @@ void init_sin()
     }
 }
 
-void liss(int *x, int* y, int t)
+void liss(int *x, int *y, int t)
 {
     const long scale = TO_FIX(50);
-    *x = TO_LONG(fix_mul(COS[(t*2 + 64) % SIN_SIZE], scale));
+    *x = TO_LONG(fix_mul(COS[(t*2+64) % SIN_SIZE], scale));
     *y = TO_LONG(fix_mul(COS[(t*3) % SIN_SIZE], scale));
 }
 
 void init_tunnel()
 {
-    int i, j, x, y;
+    int i, j;
     long scale_x, scale_y, proj;
     for(i = 0; i < LEVELS; ++i) {
 	scale_x = TO_FIX(50);
-	scale_y = TO_FIX(31);
-	proj = fix_div(TO_FIX(i+1),TO_FIX(LEVELS));
-        for(j = 0; j < POINTS; ++j) {
-	    tun_coords[i][j][0] = TO_LONG(fix_div(fix_mul(COS[j * (SIN_SIZE/POINTS)], scale_x), proj));
-	    tun_coords[i][j][1] = TO_LONG(fix_div(fix_mul(SIN[j * (SIN_SIZE/POINTS)], scale_y), proj));
+	scale_y = TO_FIX(31); /* 50 * 320/200 = 50 * 0.625 ~= 31 */
+	proj = fix_div(TO_FIX(i+1), TO_FIX(LEVELS));
+	for(j = 0; j < POINTS; ++j) {
+	    tun_coords[i][j][0] = TO_LONG(fix_div(fix_mul(COS[j * (SIN_SIZE/POINTS)], scale_x), proj)) + 160;
+	    tun_coords[i][j][1] = TO_LONG(fix_div(fix_mul(SIN[j * (SIN_SIZE/POINTS)], scale_y), proj)) + 100;
 	}
     }
     for(i = 0; i < LEVELS; ++i) {
-	liss( &liss_coords[i][0],
-	      &liss_coords[i][1], i);
+	liss(&liss_coords[i][0],
+	     &liss_coords[i][1], i);
     }
 }
 
@@ -63,21 +63,19 @@ void draw_tunnel(int t)
 {
     byte col;
     int i, j, x, y;
-
     t+=LEVELS;
-    liss( &liss_coords[t % LEVELS][0],
-	  &liss_coords[t % LEVELS][1], t);
-
+    liss(&liss_coords[t % LEVELS][0],
+	 &liss_coords[t % LEVELS][1], t);
     for(i = 0; i < LEVELS; ++i) {
-	if( (t + i) % 10 < 5 ) continue;
+	if((t+i) % 10 < 5) continue;
 	col = 31 - i / (LEVELS/16);
-        for(j = 0; j < POINTS; ++j) {
-	    x = tun_coords[i][j][0] + 160 + liss_coords[(t+i+1) % LEVELS][0];
-	    y = tun_coords[i][j][1] + 100 + liss_coords[(t+i+1) % LEVELS][1];
-            if(x >= 0 && y >= 0 && x < 320 && y < 200) {
+	for(j = 0; j < POINTS; ++j) {
+	    x = tun_coords[i][j][0] + liss_coords[(t+i+1) % LEVELS][0];
+	    y = tun_coords[i][j][1] + liss_coords[(t+i+1) % LEVELS][1];
+	    if(x >= 0 && y >= 0 && x < 320 && y < 200) {
 		SETPIX(x, y, col);
-            }
-        }
+	    }
+	}
     }
 }
 

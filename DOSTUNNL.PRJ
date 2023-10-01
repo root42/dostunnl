@@ -1,0 +1,4 @@
+dostunnl (dostunnl.c vga.h types.h fix.h)
+vga (vga.c vga.h types.h)
+fix (fix.c fix.h)
+

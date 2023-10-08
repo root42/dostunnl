@@ -33,7 +33,7 @@ void init_sin()
     }
 }
 
-void liss(int *x, int *y, int t)
+void liss(int *x, int *y, long t)
 {
     const long scale = TO_FIX(50);
     *x = TO_LONG(fix_mul(COS[(t*2+64) % SIN_SIZE], scale));
@@ -59,7 +59,7 @@ void init_tunnel()
     }
 }
 
-void draw_tunnel(int t)
+void draw_tunnel(long t)
 {
     byte col;
     int i, j, x, y;
@@ -81,7 +81,7 @@ void draw_tunnel(int t)
 
 int main()
 {
-    int t=0;
+    long t=0;
     char kc=0;
     byte far *buf=farmalloc(64000);
     BUF=buf;
